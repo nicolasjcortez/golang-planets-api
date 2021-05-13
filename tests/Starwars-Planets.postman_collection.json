@@ -1,0 +1,518 @@
+{
+	"info": {
+		"_postman_id": "5b21517e-2747-41a3-a784-5e3fcdca3d14",
+		"name": "Starwars-Planets",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "starwars-external-api",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"  pm.response.to.have.status(200);\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://swapi.dev/api/planets?search=Tatooine",
+					"protocol": "https",
+					"host": [
+						"swapi",
+						"dev"
+					],
+					"path": [
+						"api",
+						"planets"
+					],
+					"query": [
+						{
+							"key": "search",
+							"value": "Tatooine"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "201 Create Planet",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = JSON.parse(responseBody);\r",
+							"if (jsonData[\"_id\"]) {\r",
+							"    pm.environment.set(\"_id\", jsonData[\"_id\"]);\r",
+							"    pm.environment.set(\"name\", jsonData[\"name\"]);\r",
+							"}\r",
+							"\r",
+							"pm.test(\"Status code is 201\", function () {\r",
+							"  pm.response.to.have.status(201);\r",
+							"});\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"Bespin\",\r\n    \"terrain\": \"gas giant\",\r\n    \"climate\": \"temperate\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{host}}/planet",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"planet"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "422 Create Planet (planet exists)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 422\", function () {\r",
+							"  pm.response.to.have.status(422);\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"Bespin\",\r\n    \"terrain\": \"gas giant\",\r\n    \"climate\": \"temperate\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{host}}/planet",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"planet"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "200 Get All Planets",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"  pm.response.to.have.status(200);\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/planets",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"planets"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "200 Get Planet By Name",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"  pm.response.to.have.status(200);\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{host}}/planet/by-name?name={{name}}",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"planet",
+						"by-name"
+					],
+					"query": [
+						{
+							"key": "name",
+							"value": "{{name}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "400 Get Planet By Name (name missing)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 400\", function () {\r",
+							"  pm.response.to.have.status(400);\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{host}}/planet/by-name",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"planet",
+						"by-name"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "200 Get Planet By Id",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"  pm.response.to.have.status(200);\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/planet/by-id?_id={{_id}}",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"planet",
+						"by-id"
+					],
+					"query": [
+						{
+							"key": "_id",
+							"value": "{{_id}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "400 Get Planet By Id (id format)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 400\", function () {\r",
+							"  pm.response.to.have.status(400);\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/planet/by-id?_id=123",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"planet",
+						"by-id"
+					],
+					"query": [
+						{
+							"key": "_id",
+							"value": "123"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "400 Get Planet By Id (id missing)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 400\", function () {\r",
+							"  pm.response.to.have.status(400);\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/planet/by-id",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"planet",
+						"by-id"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "200 Delete Planet By Id",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"  pm.response.to.have.status(200);\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/planet/by-id?_id={{_id}}",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"planet",
+						"by-id"
+					],
+					"query": [
+						{
+							"key": "_id",
+							"value": "{{_id}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "404 Delete Planet By Id",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 404\", function () {\r",
+							"  pm.response.to.have.status(404);\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/planet/by-id?_id={{_id}}",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"planet",
+						"by-id"
+					],
+					"query": [
+						{
+							"key": "_id",
+							"value": "{{_id}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "404 Get Planet By Name",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 404\", function () {\r",
+							"  pm.response.to.have.status(404);\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{host}}/planet/by-name?name={{name}}",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"planet",
+						"by-name"
+					],
+					"query": [
+						{
+							"key": "name",
+							"value": "{{name}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "404 Get Planet By Id",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 404\", function () {\r",
+							"  pm.response.to.have.status(404);\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/planet/by-id?_id={{_id}}",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"planet",
+						"by-id"
+					],
+					"query": [
+						{
+							"key": "_id",
+							"value": "{{_id}}"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

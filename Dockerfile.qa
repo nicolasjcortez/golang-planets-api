@@ -1,0 +1,25 @@
+###############################################################
+# QA
+###############################################################
+
+###############################################################
+# BUILD STAGE
+###############################################################
+FROM golang:1.15.3-alpine3.12 as builder
+LABEL stage=builder
+WORKDIR /app
+COPY . .
+RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o main .
+
+###############################################################
+# DISTRIBUTION STAGE
+###############################################################
+FROM alpine:latest
+RUN apk --no-cache add ca-certificates
+WORKDIR /app/
+COPY --from=builder /app .
+
+ENV GIN_MODE=release
+
+EXPOSE $PORT
+CMD ["./main", "-env=qa"]

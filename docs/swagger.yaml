@@ -1,0 +1,176 @@
+definitions:
+  domain.GinError:
+    properties:
+      error:
+        type: string
+    type: object
+  domain.Planet:
+    properties:
+      _id:
+        type: string
+      climate:
+        type: string
+      name:
+        type: string
+      qtd_films:
+        type: integer
+      terrain:
+        type: string
+    required:
+    - _id
+    - climate
+    - name
+    - qtd_films
+    - terrain
+    type: object
+  domain.PlanetCreationRequest:
+    properties:
+      climate:
+        type: string
+      name:
+        type: string
+      terrain:
+        type: string
+    required:
+    - climate
+    - name
+    - terrain
+    type: object
+  domain.SuccessResponse:
+    properties:
+      name:
+        type: string
+    type: object
+info:
+  contact: {}
+paths:
+  /planet:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Planet Data
+        in: body
+        name: planet
+        required: true
+        schema:
+          $ref: '#/definitions/domain.PlanetCreationRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/domain.Planet'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.GinError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/domain.GinError'
+  /planet/by-id:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: Planet database id
+        in: query
+        name: _id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.SuccessResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.GinError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/domain.GinError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/domain.GinError'
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Planet database id
+        in: query
+        name: _id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.Planet'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.GinError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/domain.GinError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/domain.GinError'
+  /planet/by-name:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Planet name
+        in: query
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.Planet'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.GinError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/domain.GinError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/domain.GinError'
+  /planets:
+    get:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/domain.Planet'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/domain.GinError'
+swagger: "2.0"
