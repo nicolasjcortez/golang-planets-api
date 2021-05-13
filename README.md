@@ -14,12 +14,12 @@
 ## The aplication has two deploy PowerShell scripts, QA and PROD.
 ## QA: deployQAHeroku.ps1
 ## PROD: deployPRODHeroku.ps1
-## to deploy it is needed to configure HEROKU_API_KEY on yours machine env variables
-## the scripts update the environment git branch automatically
+## To deploy it is needed to configure HEROKU_API_KEY on yours machine env variables.
+## The scripts update the environment git branch automatically.
 #
 # Documentation
 ## A Swagger can be found and used to test the API with the path: {{host}}/swagger/index.html
 #
 # Tests
-## Inside the folder 'tests', there is a Postman collection and 3 enviroments (dev, qa, prod). It can be use to test the API using Postman. Running all the tests in sequence it should not fail any test.
+## Inside the folder 'tests', there is a Postman collection and 3 enviroments (dev, qa, prod). It can be used to test the API using Postman. Running all the tests in sequence should not fail any test.
 ##
