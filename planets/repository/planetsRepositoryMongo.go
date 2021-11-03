@@ -108,7 +108,7 @@ func (r PlanetsRepositoryMongo) CreatePlanet(planetRequest domain.PlanetCreation
 	}
 
 	insertedPlanet := domain.Planet{
-		ID:       oid,
+		ID:       domain.IDType(oid.Hex()),
 		Name:     planetRequest.Name,
 		Climate:  planetRequest.Climate,
 		Terrain:  planetRequest.Terrain,
