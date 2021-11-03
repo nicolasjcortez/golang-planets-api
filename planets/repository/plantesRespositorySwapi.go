@@ -5,11 +5,12 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"starwars/errs"
 	"starwars/planets/domain"
 )
 
 type PlanetsRepositorySwapi interface {
-	GetPlanetExternalAPI(string, *domain.ExternalPlanetsAPIResponse) error
+	GetPlanetExternalAPI(string) (*domain.ExternalPlanetsAPIResponse, *errs.AppError)
 }
 
 type RemotePlanetsRespositorySwapi struct {
@@ -22,7 +23,8 @@ func getParsedJsonExternalPlanetAPI(url string, target *domain.ExternalPlanetsAP
 	}
 	defer r.Body.Close()
 
-	return json.NewDecoder(r.Body).Decode(&target)
+	err = json.NewDecoder(r.Body).Decode(&target)
+	return err
 }
 
 func buildExternalPlanetURL(planetName string) (string, error) {
@@ -40,12 +42,16 @@ func buildExternalPlanetURL(planetName string) (string, error) {
 	return base.String(), nil
 }
 
-func (repo RemotePlanetsRespositorySwapi) GetPlanetExternalAPI(planetName string, apiResult *domain.ExternalPlanetsAPIResponse) error {
+func (repo RemotePlanetsRespositorySwapi) GetPlanetExternalAPI(planetName string) (*domain.ExternalPlanetsAPIResponse, *errs.AppError) {
 	externalPlanetsURL, err := buildExternalPlanetURL(planetName)
 	if err != nil {
-		return err
+		return nil, errs.NewUnexpectedError("External Stawwars API not working as expected")
 	}
 	fmt.Println(externalPlanetsURL)
-
-	return getParsedJsonExternalPlanetAPI(externalPlanetsURL, apiResult)
+	var apiResult domain.ExternalPlanetsAPIResponse
+	err = getParsedJsonExternalPlanetAPI(externalPlanetsURL, &apiResult)
+	if err != nil {
+		return nil, errs.NewUnexpectedError("External Stawwars API not working as expected")
+	}
+	return &apiResult, nil
 }

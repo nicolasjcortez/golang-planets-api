@@ -2,9 +2,9 @@ package repository
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"log"
+	"starwars/errs"
 	"starwars/planets/domain"
 	"sync"
 	"time"
@@ -47,7 +47,7 @@ func Connect(host string) *MongoConnection {
 	return instance
 }
 
-func (r PlanetsRepositoryMongo) GetAllPlanets() ([]domain.Planet, error) {
+func (r PlanetsRepositoryMongo) GetAllPlanets() ([]domain.Planet, *errs.AppError) {
 	var err error
 	var ctx, _ = context.WithTimeout(context.Background(), 40*time.Second)
 	var planets []domain.Planet
@@ -65,22 +65,22 @@ func (r PlanetsRepositoryMongo) GetAllPlanets() ([]domain.Planet, error) {
 	defer cur.Close(ctx)
 	if err != nil {
 		log.Print(err)
-		return nil, err
+		return nil, errs.NewUnexpectedError("Unexpected database error finding planets")
 	}
 
 	if err := cur.All(ctx, &planets); err != nil {
-		return nil, err
+		return nil, errs.NewUnexpectedError("Unexpected database error finding planets")
 	}
 
 	if planets == nil {
 		planets = make([]domain.Planet, 0)
-		return planets, err
+		return planets, nil
 	}
 
-	return planets, err
+	return planets, nil
 }
 
-func (r PlanetsRepositoryMongo) CreatePlanet(planetRequest domain.PlanetCreationRequest, qtdFilms int) (*domain.Planet, error) {
+func (r PlanetsRepositoryMongo) CreatePlanet(planetRequest domain.PlanetCreationRequest, qtdFilms int) (*domain.Planet, *errs.AppError) {
 	var err error
 	var ctx, _ = context.WithTimeout(context.Background(), 40*time.Second)
 
@@ -99,12 +99,11 @@ func (r PlanetsRepositoryMongo) CreatePlanet(planetRequest domain.PlanetCreation
 
 	insertResult, err := collection.InsertOne(ctx, planet)
 	if err != nil {
-		return nil, err
+		return nil, errs.NewUnexpectedError("Unexpected database error inserting planet")
 	}
 	oid, ok := insertResult.InsertedID.(primitive.ObjectID)
 	if !ok {
-		err := errors.New("Error planet id converting to mongo ObjectID")
-		return nil, err
+		return nil, errs.NewUnexpectedError("Unexpected database error planet id converting to mongo ObjectID")
 	}
 
 	insertedPlanet := domain.Planet{
@@ -115,10 +114,10 @@ func (r PlanetsRepositoryMongo) CreatePlanet(planetRequest domain.PlanetCreation
 		QtdFilms: qtdFilms,
 	}
 
-	return &insertedPlanet, err
+	return &insertedPlanet, nil
 }
 
-func (r PlanetsRepositoryMongo) GetPlanetByName(name string) (*domain.Planet, error) {
+func (r PlanetsRepositoryMongo) GetPlanetByName(name string) (*domain.Planet, *errs.AppError) {
 	var err error
 	var ctx, _ = context.WithTimeout(context.Background(), 40*time.Second)
 	var planet domain.Planet
@@ -137,24 +136,22 @@ func (r PlanetsRepositoryMongo) GetPlanetByName(name string) (*domain.Planet, er
 	if err != nil {
 		switch err {
 		case mongo.ErrNoDocuments:
-			err := errors.New("Planet with this name not found")
-			return nil, err // no documents found
+			return nil, errs.NewNotFoundError("Planet with this name not found")
 		default:
-			return nil, err // something else
+			return nil, errs.NewUnexpectedError("Unexpected database error find planet")
 		}
 	}
 
-	return &planet, err
+	return &planet, nil
 }
 
-func (r PlanetsRepositoryMongo) GetPlanetById(id string) (*domain.Planet, error) {
+func (r PlanetsRepositoryMongo) GetPlanetById(id string) (*domain.Planet, *errs.AppError) {
 	var err error
 	var ctx, _ = context.WithTimeout(context.Background(), 40*time.Second)
 	var planet domain.Planet
 	oid, err := convertStringToOID(id)
 	if err != nil {
-		err := errors.New("Error converting query parameter id to database id format")
-		return nil, err // no documents found
+		return nil, errs.NewValidationError("Error converting query parameter id to database mongo id format")
 	}
 	// create the context and connection (once)
 	client := Connect(r.Host)
@@ -170,23 +167,21 @@ func (r PlanetsRepositoryMongo) GetPlanetById(id string) (*domain.Planet, error)
 	if err != nil {
 		switch err {
 		case mongo.ErrNoDocuments:
-			err := errors.New("Planet with this id not found")
-			return nil, err // no documents found
+			return nil, errs.NewNotFoundError("Planet with this id not found")
 		default:
-			return nil, err // something else
+			return nil, errs.NewUnexpectedError("Unexpected database error")
 		}
 	}
 
-	return &planet, err
+	return &planet, nil
 }
 
-func (r PlanetsRepositoryMongo) DeletePlanetById(id string) error {
+func (r PlanetsRepositoryMongo) DeletePlanetById(id string) *errs.AppError {
 	var err error
 	var ctx, _ = context.WithTimeout(context.Background(), 40*time.Second)
 	oid, err := convertStringToOID(id)
 	if err != nil {
-		err := errors.New("Error converting query parameter id to database id format")
-		return err // no documents found
+		return errs.NewValidationError("Error converting query parameter id to database mongo id format") // no documents found
 	}
 	// create the context and connection (once)
 	client := Connect(r.Host)
@@ -202,10 +197,9 @@ func (r PlanetsRepositoryMongo) DeletePlanetById(id string) error {
 	if err != nil {
 		switch err {
 		case mongo.ErrNoDocuments:
-			err := errors.New("Planet with this id not found")
-			return err // no documents found
+			return errs.NewNotFoundError("Planet with this id not found")
 		default:
-			return err // something else
+			return errs.NewUnexpectedError("Unexpected database error")
 		}
 	}
 

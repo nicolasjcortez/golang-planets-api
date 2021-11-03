@@ -1,7 +1,8 @@
 package service
 
 import (
-	"errors"
+	"net/http"
+	"starwars/errs"
 	"starwars/planets/domain"
 	"starwars/planets/repository"
 )
@@ -11,14 +12,12 @@ type PlanetsService struct {
 	Swapi repository.PlanetsRepositorySwapi
 }
 
-func (s PlanetsService) GetAllPlanets() ([]domain.Planet, error) {
+func (s PlanetsService) GetAllPlanets() ([]domain.Planet, *errs.AppError) {
 	return s.Repo.GetAllPlanets()
 }
 
-func (s PlanetsService) getPlanetQtdFilms(planetName string) (int, error) {
-	var err error
-	var apiResult domain.ExternalPlanetsAPIResponse
-	err = s.Swapi.GetPlanetExternalAPI(planetName, &apiResult)
+func (s PlanetsService) getPlanetQtdFilms(planetName string) (int, *errs.AppError) {
+	apiResult, err := s.Swapi.GetPlanetExternalAPI(planetName)
 	if err != nil {
 		return 0, err
 	}
@@ -27,39 +26,36 @@ func (s PlanetsService) getPlanetQtdFilms(planetName string) (int, error) {
 	}
 
 	if apiResult.Results[0].Name != planetName {
-		err := errors.New("External Stawwars API not working as expected")
 		return 0, err
 	}
 	qtdFilms := len(apiResult.Results[0].Films)
 	return qtdFilms, nil
 }
 
-func (s PlanetsService) CreatePlanet(planet domain.PlanetCreationRequest) (*domain.Planet, error) {
+func (s PlanetsService) CreatePlanet(planet domain.PlanetCreationRequest) (*domain.Planet, *errs.AppError) {
 	_, err := s.Repo.GetPlanetByName(planet.Name)
 	if err == nil {
-		err := errors.New("Planet with this name already exists")
-		return nil, err
-	} else if err.Error() != "Planet with this name not found" {
+		return nil, errs.NewConflictError("Planet with this name already exists")
+	} else if err.Code != http.StatusNotFound {
 		return nil, err
 	}
 
 	qtdFilms, err := s.getPlanetQtdFilms(planet.Name)
 	if err != nil {
-		err := errors.New("External Stawwars API not available or not working as expected")
 		return nil, err
 	}
 	return s.Repo.CreatePlanet(planet, qtdFilms)
 }
 
-func (s PlanetsService) GetPlanetByName(name string) (*domain.Planet, error) {
+func (s PlanetsService) GetPlanetByName(name string) (*domain.Planet, *errs.AppError) {
 	return s.Repo.GetPlanetByName(name)
 }
 
-func (s PlanetsService) GetPlanetById(id string) (*domain.Planet, error) {
+func (s PlanetsService) GetPlanetById(id string) (*domain.Planet, *errs.AppError) {
 	return s.Repo.GetPlanetById(id)
 }
 
-func (s PlanetsService) DeletePlanetById(id string) error {
+func (s PlanetsService) DeletePlanetById(id string) *errs.AppError {
 	_, err := s.Repo.GetPlanetById(id)
 	if err != nil {
 		return err
