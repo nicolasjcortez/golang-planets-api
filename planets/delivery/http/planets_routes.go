@@ -8,14 +8,10 @@ func ApplyRoutes(r *gin.Engine, h PlanetHandler) {
 	planets := r.Group("/planets")
 	{
 		planets.GET("", h.GetPlanets)
-
-	}
-	planet := r.Group("/planet")
-	{
-		planet.POST("", h.CreatePlanet)
-		planet.GET("by-id", h.GetPlanetById)
-		planet.GET("by-name", h.GetPlanetByName)
-		planet.DELETE("by-id", h.DeletePlanetById)
+		planets.POST("", h.CreatePlanet)
+		planets.GET(":id", h.GetPlanetById)
+		planets.GET("by-name", h.GetPlanetByName)
+		planets.DELETE(":id", h.DeletePlanetById)
 
 	}
 }

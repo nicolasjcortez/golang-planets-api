@@ -25,8 +25,10 @@ import (
 	"starwars/planets/service"
 )
 
+var version = "V.0.0"
+
 func handleVersion(c *gin.Context) {
-	c.JSON(http.StatusOK, "V.0.0")
+	c.JSON(http.StatusOK, version)
 }
 
 func init() {
@@ -88,7 +90,7 @@ func main() {
 	// SWAGGER
 	docs.SwaggerInfo.Title = "STARWARS PLANETS API " + *env_arg
 	docs.SwaggerInfo.Description = "Planets API"
-	docs.SwaggerInfo.Version = "V 0.0"
+	docs.SwaggerInfo.Version = version
 	// docs.SwaggerInfo.Host = "localhost:" + port
 	// docs.SwaggerInfo.BasePath = "/api/v1"
 	docs.SwaggerInfo.Schemes = []string{protocol}

@@ -4,7 +4,7 @@ import "net/http"
 
 type AppError struct {
 	Code    int    `json:",omitempty"`
-	Message string `json:"error_message"`
+	Message string `json:"error"`
 }
 
 func (e AppError) AsMessage() *AppError {

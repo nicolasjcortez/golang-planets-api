@@ -25,12 +25,6 @@ func (id IDType) MarshalBSONValue() (bsontype.Type, []byte, error) {
 	return bson.MarshalValue(p)
 }
 
-type PlanetCreationRequest struct {
-	Name    string `json:"name" bson:"name" binding:"required"`
-	Climate string `json:"climate" bson:"climate" binding:"required"`
-	Terrain string `json:"terrain" bson:"terrain" binding:"required"`
-}
-
 type PlanetCreationObj struct {
 	Name     string `json:"name" bson:"name"`
 	Climate  string `json:"climate" bson:"climate"`

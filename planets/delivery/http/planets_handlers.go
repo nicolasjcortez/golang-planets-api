@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	general_domain "starwars/domain"
-	"starwars/planets/domain"
+	"starwars/planets/dto"
 	planets_service "starwars/planets/service"
 
 	"github.com/gin-gonic/gin"
@@ -39,10 +39,10 @@ func (h PlanetHandler) GetPlanets(c *gin.Context) {
 // @Failure 400 {object} domain.GinError
 // @Failure 404 {object} domain.GinError
 // @Failure 500 {object} domain.GinError
-// @Router /planet/by-id [get]
+// @Router /planet/:id [get]
 func (h PlanetHandler) GetPlanetById(c *gin.Context) {
 
-	id := c.Query("_id")
+	id := c.Param("id")
 
 	result, err := h.PlanetsService.GetPlanetById(id)
 
@@ -86,7 +86,7 @@ func (h PlanetHandler) GetPlanetByName(c *gin.Context) {
 // @Router /planet [post]
 func (h PlanetHandler) CreatePlanet(c *gin.Context) {
 
-	var planet domain.PlanetCreationRequest
+	var planet dto.PlanetCreationRequest
 	err := c.BindJSON(&planet)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, c.Error(err))
@@ -109,10 +109,10 @@ func (h PlanetHandler) CreatePlanet(c *gin.Context) {
 // @Failure 400 {object} domain.GinError
 // @Failure 404 {object} domain.GinError
 // @Failure 500 {object} domain.GinError
-// @Router /planet/by-id [delete]
+// @Router /planet/:id [delete]
 func (h PlanetHandler) DeletePlanetById(c *gin.Context) {
 
-	id := c.Query("_id")
+	id := c.Param("id")
 	if id == "" {
 		c.JSON(http.StatusBadRequest, c.Error(errors.New("Missing query parameter: _id")))
 		return

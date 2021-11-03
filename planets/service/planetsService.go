@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"starwars/errs"
 	"starwars/planets/domain"
+	"starwars/planets/dto"
 	"starwars/planets/repository"
 )
 
@@ -32,29 +33,39 @@ func (s PlanetsService) getPlanetQtdFilms(planetName string) (int, *errs.AppErro
 	return qtdFilms, nil
 }
 
-func (s PlanetsService) CreatePlanet(planet domain.PlanetCreationRequest) (*domain.Planet, *errs.AppError) {
-	_, err := s.Repo.GetPlanetByName(planet.Name)
+func (s PlanetsService) CreatePlanet(planetRequest dto.PlanetCreationRequest) (*domain.Planet, *errs.AppError) {
+	_, err := s.Repo.GetPlanetByName(planetRequest.Name)
 	if err == nil {
 		return nil, errs.NewConflictError("Planet with this name already exists")
 	} else if err.Code != http.StatusNotFound {
 		return nil, err
 	}
 
-	qtdFilms, err := s.getPlanetQtdFilms(planet.Name)
+	qtdFilms, err := s.getPlanetQtdFilms(planetRequest.Name)
 	if err != nil {
 		return nil, err
 	}
-	id, err := s.Repo.CreatePlanet(planet, qtdFilms)
-	if err != nil {
-		return nil, err
-	}
-	responsePlanet := domain.Planet{
-		ID:       domain.IDType(*id),
-		Name:     planet.Name,
-		Climate:  planet.Climate,
-		Terrain:  planet.Terrain,
+
+	planetDB := domain.PlanetCreationObj{
+		Name:     planetRequest.Name,
+		Climate:  planetRequest.Climate,
+		Terrain:  planetRequest.Terrain,
 		QtdFilms: qtdFilms,
 	}
+
+	id, err := s.Repo.CreatePlanet(planetDB, qtdFilms)
+	if err != nil {
+		return nil, err
+	}
+
+	responsePlanet := domain.Planet{
+		ID:       domain.IDType(*id),
+		Name:     planetDB.Name,
+		Climate:  planetDB.Climate,
+		Terrain:  planetDB.Terrain,
+		QtdFilms: qtdFilms,
+	}
+
 	return &responsePlanet, nil
 }
 

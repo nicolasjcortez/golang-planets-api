@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"starwars/errs"
+	"starwars/logger"
 	"starwars/planets/domain"
 	"sync"
 	"time"
@@ -80,7 +81,7 @@ func (r PlanetsRepositoryMongo) GetAllPlanets() ([]domain.Planet, *errs.AppError
 	return planets, nil
 }
 
-func (r PlanetsRepositoryMongo) CreatePlanet(planetRequest domain.PlanetCreationRequest, qtdFilms int) (*string, *errs.AppError) {
+func (r PlanetsRepositoryMongo) CreatePlanet(planet domain.PlanetCreationObj, qtdFilms int) (*string, *errs.AppError) {
 	var err error
 	var ctx, _ = context.WithTimeout(context.Background(), 40*time.Second)
 
@@ -89,13 +90,6 @@ func (r PlanetsRepositoryMongo) CreatePlanet(planetRequest domain.PlanetCreation
 
 	// select the db and collection
 	collection := client.Conn.Database(r.Database).Collection("planets")
-
-	planet := domain.PlanetCreationObj{
-		Name:     planetRequest.Name,
-		Climate:  planetRequest.Climate,
-		Terrain:  planetRequest.Terrain,
-		QtdFilms: qtdFilms,
-	}
 
 	insertResult, err := collection.InsertOne(ctx, planet)
 	if err != nil {
@@ -144,7 +138,8 @@ func (r PlanetsRepositoryMongo) GetPlanetById(id string) (*domain.Planet, *errs.
 	var planet domain.Planet
 	oid, err := convertStringToOID(id)
 	if err != nil {
-		return nil, errs.NewValidationError("Error converting query parameter id to database mongo id format")
+		logger.Error("Error converting id to mongo format")
+		return nil, errs.NewBadRequestError("Error converting query parameter id to database mongo id format")
 	}
 	// create the context and connection (once)
 	client := Connect(r.Host)

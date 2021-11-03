@@ -19,6 +19,7 @@
 #
 # Documentation
 ### A Swagger can be found and used to test the API with the path: {{host}}/swagger/index.html
+### $ swag init
 #
 # Tests
 ### Inside the folder 'tests', there is a Postman collection and 3 enviroments (dev, qa, prod). 

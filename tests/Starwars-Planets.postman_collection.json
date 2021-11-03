@@ -81,12 +81,12 @@
 					}
 				},
 				"url": {
-					"raw": "{{host}}/planet",
+					"raw": "{{host}}/planets",
 					"host": [
 						"{{host}}"
 					],
 					"path": [
-						"planet"
+						"planets"
 					]
 				}
 			},
@@ -121,12 +121,12 @@
 					}
 				},
 				"url": {
-					"raw": "{{host}}/planet",
+					"raw": "{{host}}/planets",
 					"host": [
 						"{{host}}"
 					],
 					"path": [
-						"planet"
+						"planets"
 					]
 				}
 			},
@@ -190,12 +190,12 @@
 					"raw": ""
 				},
 				"url": {
-					"raw": "{{host}}/planet/by-name?name={{name}}",
+					"raw": "{{host}}/planets/by-name?name={{name}}",
 					"host": [
 						"{{host}}"
 					],
 					"path": [
-						"planet",
+						"planets",
 						"by-name"
 					],
 					"query": [
@@ -235,12 +235,12 @@
 					"raw": ""
 				},
 				"url": {
-					"raw": "{{host}}/planet/by-name",
+					"raw": "{{host}}/planets/by-name",
 					"host": [
 						"{{host}}"
 					],
 					"path": [
-						"planet",
+						"planets",
 						"by-name"
 					]
 				}
@@ -267,19 +267,13 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{host}}/planet/by-id?_id={{_id}}",
+					"raw": "{{host}}/planets/{{_id}}",
 					"host": [
 						"{{host}}"
 					],
 					"path": [
-						"planet",
-						"by-id"
-					],
-					"query": [
-						{
-							"key": "_id",
-							"value": "{{_id}}"
-						}
+						"planets",
+						"{{_id}}"
 					]
 				}
 			},
@@ -305,51 +299,13 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{host}}/planet/by-id?_id=123",
+					"raw": "{{host}}/planets/123",
 					"host": [
 						"{{host}}"
 					],
 					"path": [
-						"planet",
-						"by-id"
-					],
-					"query": [
-						{
-							"key": "_id",
-							"value": "123"
-						}
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "400 Get Planet By Id (id missing)",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"Status code is 400\", function () {\r",
-							"  pm.response.to.have.status(400);\r",
-							"});\r",
-							""
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "{{host}}/planet/by-id",
-					"host": [
-						"{{host}}"
-					],
-					"path": [
-						"planet",
-						"by-id"
+						"planets",
+						"123"
 					]
 				}
 			},
@@ -375,19 +331,13 @@
 				"method": "DELETE",
 				"header": [],
 				"url": {
-					"raw": "{{host}}/planet/by-id?_id={{_id}}",
+					"raw": "{{host}}/planets/{{_id}}",
 					"host": [
 						"{{host}}"
 					],
 					"path": [
-						"planet",
-						"by-id"
-					],
-					"query": [
-						{
-							"key": "_id",
-							"value": "{{_id}}"
-						}
+						"planets",
+						"{{_id}}"
 					]
 				}
 			},
@@ -413,19 +363,13 @@
 				"method": "DELETE",
 				"header": [],
 				"url": {
-					"raw": "{{host}}/planet/by-id?_id={{_id}}",
+					"raw": "{{host}}/planets/{{_id}}",
 					"host": [
 						"{{host}}"
 					],
 					"path": [
-						"planet",
-						"by-id"
-					],
-					"query": [
-						{
-							"key": "_id",
-							"value": "{{_id}}"
-						}
+						"planets",
+						"{{_id}}"
 					]
 				}
 			},
@@ -458,12 +402,12 @@
 					"raw": ""
 				},
 				"url": {
-					"raw": "{{host}}/planet/by-name?name={{name}}",
+					"raw": "{{host}}/planets/by-name?name={{name}}",
 					"host": [
 						"{{host}}"
 					],
 					"path": [
-						"planet",
+						"planets",
 						"by-name"
 					],
 					"query": [
@@ -496,12 +440,12 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{host}}/planet/by-id?_id={{_id}}",
+					"raw": "{{host}}/planets/by-id?_id={{_id}}",
 					"host": [
 						"{{host}}"
 					],
 					"path": [
-						"planet",
+						"planets",
 						"by-id"
 					],
 					"query": [
