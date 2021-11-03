@@ -21,6 +21,8 @@ import (
 
 	"starwars/docs"
 	planets "starwars/planets/delivery/http"
+	"starwars/planets/repository"
+	"starwars/planets/service"
 )
 
 func handleVersion(c *gin.Context) {
@@ -38,13 +40,13 @@ func init() {
 	}
 }
 
-func ApiMiddleware(host, db string) gin.HandlerFunc {
-	return func(c *gin.Context) {
-		c.Set("host", host)
-		c.Set("db", db)
-		c.Next()
-	}
-}
+// func ApiMiddleware(host, db string) gin.HandlerFunc {
+// 	return func(c *gin.Context) {
+// 		c.Set("host", host)
+// 		c.Set("db", db)
+// 		c.Next()
+// 	}
+// }
 
 func JSONMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
@@ -60,9 +62,9 @@ func main() {
 	fmt.Println("\nCONFIG ENVIRONMENT:", *env_arg)
 
 	//CONFIG
-	var host, db, port string
+	var mongo_host, db, port string
 	var protocol string
-	host = viper.GetString(*env_arg + ".MONGO_HOST")
+	mongo_host = viper.GetString(*env_arg + ".MONGO_HOST")
 	db = viper.GetString(*env_arg + ".MONGO_DB")
 	if *env_arg == "dev" {
 		protocol = "http"
@@ -72,7 +74,7 @@ func main() {
 		port = os.Getenv("PORT")
 	}
 
-	fmt.Println("MONGO_HOST: ", host)
+	fmt.Println("MONGO_HOST: ", mongo_host)
 	fmt.Println("MONGO_DB: ", db)
 	fmt.Println("PORT: ", port)
 
@@ -80,7 +82,7 @@ func main() {
 	r := gin.Default()
 	r.Use(cors.Default())
 	r.Use(gzip.Gzip(gzip.DefaultCompression))
-	r.Use(ApiMiddleware(host, db))
+	// r.Use(ApiMiddleware(host, db))
 	r.Use(JSONMiddleware())
 
 	// SWAGGER
@@ -95,7 +97,17 @@ func main() {
 	// REST
 	r.GET("/", handleVersion)
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
-	planets.ApplyRoutes(r)
+
+	ph := planets.PlanetHandler{
+		PlanetsService: service.PlanetsService{
+			Repo: repository.PlanetsRepositoryMongo{
+				Host:     mongo_host,
+				Database: db,
+			},
+			Swapi: repository.RemotePlanetsRespositorySwapi{},
+		},
+	}
+	planets.ApplyRoutes(r, ph)
 
 	srv := &http.Server{
 		Addr:    ":" + port,

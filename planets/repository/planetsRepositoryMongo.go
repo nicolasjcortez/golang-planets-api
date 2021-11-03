@@ -1,11 +1,11 @@
-package mongo
+package repository
 
 import (
 	"context"
 	"errors"
 	"fmt"
 	"log"
-	"starwars/domain"
+	"starwars/planets/domain"
 	"sync"
 	"time"
 
@@ -22,6 +22,11 @@ type MongoConnection struct {
 }
 
 var instance *MongoConnection
+
+type PlanetsRepositoryMongo struct {
+	Host     string
+	Database string
+}
 
 func Connect(host string) *MongoConnection {
 	once.Do(func() {
@@ -42,16 +47,16 @@ func Connect(host string) *MongoConnection {
 	return instance
 }
 
-func GetAllPlanets(host, db string) ([]domain.Planet, error) {
+func (r PlanetsRepositoryMongo) GetAllPlanets() ([]domain.Planet, error) {
 	var err error
 	var ctx, _ = context.WithTimeout(context.Background(), 40*time.Second)
 	var planets []domain.Planet
 
 	// create the context and connection (once)
-	client := Connect(host)
+	client := Connect(r.Host)
 
 	// select the db and collection
-	collection := client.Conn.Database(db).Collection("planets")
+	collection := client.Conn.Database(r.Database).Collection("planets")
 
 	// set options
 	options := options.Find()
@@ -75,15 +80,15 @@ func GetAllPlanets(host, db string) ([]domain.Planet, error) {
 	return planets, err
 }
 
-func CreatePlanet(host, db string, planetRequest domain.PlanetCreationRequest, qtdFilms int) (*domain.Planet, error) {
+func (r PlanetsRepositoryMongo) CreatePlanet(planetRequest domain.PlanetCreationRequest, qtdFilms int) (*domain.Planet, error) {
 	var err error
 	var ctx, _ = context.WithTimeout(context.Background(), 40*time.Second)
 
 	// create the context and connection (once)
-	client := Connect(host)
+	client := Connect(r.Host)
 
 	// select the db and collection
-	collection := client.Conn.Database(db).Collection("planets")
+	collection := client.Conn.Database(r.Database).Collection("planets")
 
 	planet := domain.PlanetCreationObj{
 		Name:     planetRequest.Name,
@@ -113,16 +118,16 @@ func CreatePlanet(host, db string, planetRequest domain.PlanetCreationRequest, q
 	return &insertedPlanet, err
 }
 
-func GetPlanetByName(host, db, name string) (*domain.Planet, error) {
+func (r PlanetsRepositoryMongo) GetPlanetByName(name string) (*domain.Planet, error) {
 	var err error
 	var ctx, _ = context.WithTimeout(context.Background(), 40*time.Second)
 	var planet domain.Planet
 
 	// create the context and connection (once)
-	client := Connect(host)
+	client := Connect(r.Host)
 
 	// select the db and collection
-	collection := client.Conn.Database(db).Collection("planets")
+	collection := client.Conn.Database(r.Database).Collection("planets")
 
 	filter := bson.D{
 		{"name", name},
@@ -142,7 +147,7 @@ func GetPlanetByName(host, db, name string) (*domain.Planet, error) {
 	return &planet, err
 }
 
-func GetPlanetById(host, db, id string) (*domain.Planet, error) {
+func (r PlanetsRepositoryMongo) GetPlanetById(id string) (*domain.Planet, error) {
 	var err error
 	var ctx, _ = context.WithTimeout(context.Background(), 40*time.Second)
 	var planet domain.Planet
@@ -152,10 +157,10 @@ func GetPlanetById(host, db, id string) (*domain.Planet, error) {
 		return nil, err // no documents found
 	}
 	// create the context and connection (once)
-	client := Connect(host)
+	client := Connect(r.Host)
 
 	// select the db and collection
-	collection := client.Conn.Database(db).Collection("planets")
+	collection := client.Conn.Database(r.Database).Collection("planets")
 
 	filter := bson.D{
 		{"_id", oid},
@@ -175,7 +180,7 @@ func GetPlanetById(host, db, id string) (*domain.Planet, error) {
 	return &planet, err
 }
 
-func DeletePlanetById(host, db, id string) error {
+func (r PlanetsRepositoryMongo) DeletePlanetById(id string) error {
 	var err error
 	var ctx, _ = context.WithTimeout(context.Background(), 40*time.Second)
 	oid, err := convertStringToOID(id)
@@ -184,10 +189,10 @@ func DeletePlanetById(host, db, id string) error {
 		return err // no documents found
 	}
 	// create the context and connection (once)
-	client := Connect(host)
+	client := Connect(r.Host)
 
 	// select the db and collection
-	collection := client.Conn.Database(db).Collection("planets")
+	collection := client.Conn.Database(r.Database).Collection("planets")
 
 	filter := bson.D{
 		{"_id", oid},

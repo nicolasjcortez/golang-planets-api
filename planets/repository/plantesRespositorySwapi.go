@@ -1,12 +1,19 @@
-package service
+package repository
 
 import (
 	"encoding/json"
 	"fmt"
 	"net/http"
 	"net/url"
-	"starwars/domain"
+	"starwars/planets/domain"
 )
+
+type PlanetsRepositorySwapi interface {
+	GetPlanetExternalAPI(string, *domain.ExternalPlanetsAPIResponse) error
+}
+
+type RemotePlanetsRespositorySwapi struct {
+}
 
 func getParsedJsonExternalPlanetAPI(url string, target *domain.ExternalPlanetsAPIResponse) error {
 	r, err := http.Get(url)
@@ -33,7 +40,7 @@ func buildExternalPlanetURL(planetName string) (string, error) {
 	return base.String(), nil
 }
 
-func getPlanetExternalAPI(planetName string, apiResult *domain.ExternalPlanetsAPIResponse) error {
+func (repo RemotePlanetsRespositorySwapi) GetPlanetExternalAPI(planetName string, apiResult *domain.ExternalPlanetsAPIResponse) error {
 	externalPlanetsURL, err := buildExternalPlanetURL(planetName)
 	if err != nil {
 		return err
