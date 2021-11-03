@@ -80,7 +80,7 @@ func (r PlanetsRepositoryMongo) GetAllPlanets() ([]domain.Planet, *errs.AppError
 	return planets, nil
 }
 
-func (r PlanetsRepositoryMongo) CreatePlanet(planetRequest domain.PlanetCreationRequest, qtdFilms int) (*domain.Planet, *errs.AppError) {
+func (r PlanetsRepositoryMongo) CreatePlanet(planetRequest domain.PlanetCreationRequest, qtdFilms int) (*string, *errs.AppError) {
 	var err error
 	var ctx, _ = context.WithTimeout(context.Background(), 40*time.Second)
 
@@ -106,15 +106,8 @@ func (r PlanetsRepositoryMongo) CreatePlanet(planetRequest domain.PlanetCreation
 		return nil, errs.NewUnexpectedError("Unexpected database error planet id converting to mongo ObjectID")
 	}
 
-	insertedPlanet := domain.Planet{
-		ID:       domain.IDType(oid.Hex()),
-		Name:     planetRequest.Name,
-		Climate:  planetRequest.Climate,
-		Terrain:  planetRequest.Terrain,
-		QtdFilms: qtdFilms,
-	}
-
-	return &insertedPlanet, nil
+	stringOid := oid.Hex()
+	return &stringOid, nil
 }
 
 func (r PlanetsRepositoryMongo) GetPlanetByName(name string) (*domain.Planet, *errs.AppError) {

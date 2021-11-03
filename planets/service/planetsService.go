@@ -44,7 +44,18 @@ func (s PlanetsService) CreatePlanet(planet domain.PlanetCreationRequest) (*doma
 	if err != nil {
 		return nil, err
 	}
-	return s.Repo.CreatePlanet(planet, qtdFilms)
+	id, err := s.Repo.CreatePlanet(planet, qtdFilms)
+	if err != nil {
+		return nil, err
+	}
+	responsePlanet := domain.Planet{
+		ID:       domain.IDType(*id),
+		Name:     planet.Name,
+		Climate:  planet.Climate,
+		Terrain:  planet.Terrain,
+		QtdFilms: qtdFilms,
+	}
+	return &responsePlanet, nil
 }
 
 func (s PlanetsService) GetPlanetByName(name string) (*domain.Planet, *errs.AppError) {
