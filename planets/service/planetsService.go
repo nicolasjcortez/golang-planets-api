@@ -48,10 +48,16 @@ func (s PlanetsService) CreatePlanet(planet domain.PlanetCreationRequest) (*doma
 }
 
 func (s PlanetsService) GetPlanetByName(name string) (*domain.Planet, *errs.AppError) {
+	if name == "" {
+		return nil, errs.NewBadRequestError("Missing query parameter: name")
+	}
 	return s.Repo.GetPlanetByName(name)
 }
 
 func (s PlanetsService) GetPlanetById(id string) (*domain.Planet, *errs.AppError) {
+	if id == "" {
+		return nil, errs.NewBadRequestError("Missing query parameter: _id")
+	}
 	return s.Repo.GetPlanetById(id)
 }
 

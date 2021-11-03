@@ -40,3 +40,10 @@ func NewConflictError(message string) *AppError {
 		Code:    http.StatusConflict,
 	}
 }
+
+func NewBadRequestError(message string) *AppError {
+	return &AppError{
+		Message: message,
+		Code:    http.StatusBadRequest,
+	}
+}

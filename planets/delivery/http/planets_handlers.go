@@ -43,10 +43,6 @@ func (h PlanetHandler) GetPlanets(c *gin.Context) {
 func (h PlanetHandler) GetPlanetById(c *gin.Context) {
 
 	id := c.Query("_id")
-	if id == "" {
-		c.JSON(http.StatusBadRequest, c.Error(errors.New("Missing query parameter: _id")))
-		return
-	}
 
 	result, err := h.PlanetsService.GetPlanetById(id)
 
@@ -69,12 +65,9 @@ func (h PlanetHandler) GetPlanetById(c *gin.Context) {
 func (h PlanetHandler) GetPlanetByName(c *gin.Context) {
 
 	name := c.Query("name")
-	if name == "" {
-		c.JSON(http.StatusBadRequest, c.Error(errors.New("Missing query parameter: name")))
-		return
-	}
 
 	result, err := h.PlanetsService.GetPlanetByName(name)
+
 	if err != nil {
 		c.JSON(err.Code, err.AsMessage())
 
