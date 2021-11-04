@@ -7,13 +7,14 @@ import (
 )
 
 type Planet struct {
-	ID       IDType `json:"_id" bson:"_id,omitempty" binding:"required"`
-	Name     string `json:"name" bson:"name" binding:"required"`
-	Climate  string `json:"climate" bson:"climate" binding:"required"`
-	Terrain  string `json:"terrain" bson:"terrain" binding:"required"`
-	QtdFilms int    `json:"qtd_films" bson:"qtd_films" binding:"required"`
+	ID       int    `json:"_id" bson:"_id,omitempty" binding:"required" db:"planet_id"`
+	Name     string `json:"name" bson:"name" binding:"required" db:"name"`
+	Climate  string `json:"climate" bson:"climate" binding:"required" db:"climate"`
+	Terrain  string `json:"terrain" bson:"terrain" binding:"required" db:"terrain"`
+	QtdFilms int    `json:"qtd_films" bson:"qtd_films" binding:"required" db:"qtd_films"`
 }
 
+// use when is mongo objID (Planet.ID)
 type IDType string
 
 func (id IDType) MarshalBSONValue() (bsontype.Type, []byte, error) {

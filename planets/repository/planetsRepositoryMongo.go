@@ -81,7 +81,7 @@ func (r PlanetsRepositoryMongo) GetAllPlanets() ([]domain.Planet, *errs.AppError
 	return planets, nil
 }
 
-func (r PlanetsRepositoryMongo) CreatePlanet(planet domain.PlanetCreationObj, qtdFilms int) (*string, *errs.AppError) {
+func (r PlanetsRepositoryMongo) CreatePlanet(planet domain.PlanetCreationObj) (*string, *errs.AppError) {
 	var err error
 	var ctx, _ = context.WithTimeout(context.Background(), 40*time.Second)
 

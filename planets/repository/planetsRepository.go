@@ -7,7 +7,7 @@ import (
 
 type PlanetsRepository interface {
 	GetAllPlanets() ([]domain.Planet, *errs.AppError)
-	CreatePlanet(planet domain.PlanetCreationObj, qtdFilms int) (*string, *errs.AppError)
+	CreatePlanet(planet domain.PlanetCreationObj) (*string, *errs.AppError)
 	GetPlanetByName(name string) (*domain.Planet, *errs.AppError)
 	GetPlanetById(id string) (*domain.Planet, *errs.AppError)
 	DeletePlanetById(id string) *errs.AppError

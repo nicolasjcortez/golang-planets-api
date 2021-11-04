@@ -14,6 +14,7 @@ import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-contrib/gzip"
 	"github.com/gin-gonic/gin"
+	"github.com/jmoiron/sqlx"
 	"github.com/spf13/viper"
 	_ "github.com/spf13/viper"
 	swaggerFiles "github.com/swaggo/files"
@@ -23,6 +24,8 @@ import (
 	planets "starwars/planets/delivery/http"
 	"starwars/planets/repository"
 	"starwars/planets/service"
+
+	_ "github.com/go-sql-driver/mysql"
 )
 
 var version = "V.0.0"
@@ -67,6 +70,7 @@ func main() {
 	var mongo_host, db, port string
 	var protocol string
 	mongo_host = viper.GetString(*env_arg + ".MONGO_HOST")
+
 	db = viper.GetString(*env_arg + ".MONGO_DB")
 	if *env_arg == "dev" {
 		protocol = "http"
@@ -100,15 +104,26 @@ func main() {
 	r.GET("/", handleVersion)
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
+	// ph := planets.PlanetHandler{
+	// 	PlanetsService: service.PlanetsService{
+	// 		Repo: repository.PlanetsRepositoryMongo{
+	// 			Host:     mongo_host,
+	// 			Database: db,
+	// 		},
+	// 		Swapi: repository.RemotePlanetsRespositorySwapi{},
+	// 	},
+	// }
+
+	dbClient := getDbClient(*env_arg)
 	ph := planets.PlanetHandler{
 		PlanetsService: service.PlanetsService{
-			Repo: repository.PlanetsRepositoryMongo{
-				Host:     mongo_host,
-				Database: db,
+			Repo: repository.PlanetsRepositoryMySQL{
+				Client: dbClient,
 			},
 			Swapi: repository.RemotePlanetsRespositorySwapi{},
 		},
 	}
+
 	planets.ApplyRoutes(r, ph)
 
 	srv := &http.Server{
@@ -132,4 +147,24 @@ func main() {
 		log.Fatal("Server forced to shutdown:", err)
 	}
 	log.Println("Server exiting")
+}
+
+func getDbClient(env_arg string) *sqlx.DB {
+
+	dbUser := viper.GetString(env_arg + ".MYSQL_USER")
+	dbPasswd := viper.GetString(env_arg + ".MYSQL_PASSWD")
+	dbAddr := viper.GetString(env_arg + ".MYSQL_ADDR")
+	dbPort := viper.GetString(env_arg + ".MYSQL_PORT")
+	dbName := viper.GetString(env_arg + ".MYSQL_NAME")
+
+	datasource := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", dbUser, dbPasswd, dbAddr, dbPort, dbName)
+	client, err := sqlx.Open("mysql", datasource)
+	if err != nil {
+		panic(err)
+	}
+	// See "Important settings" section.
+	client.SetConnMaxLifetime(time.Minute * 3)
+	client.SetMaxOpenConns(10)
+	client.SetMaxIdleConns(10)
+	return client
 }

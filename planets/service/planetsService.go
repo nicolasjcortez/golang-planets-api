@@ -6,6 +6,7 @@ import (
 	"starwars/planets/domain"
 	"starwars/planets/dto"
 	"starwars/planets/repository"
+	"strconv"
 )
 
 type PlanetsService struct {
@@ -53,13 +54,17 @@ func (s PlanetsService) CreatePlanet(planetRequest dto.PlanetCreationRequest) (*
 		QtdFilms: qtdFilms,
 	}
 
-	id, err := s.Repo.CreatePlanet(planetDB, qtdFilms)
+	id, err := s.Repo.CreatePlanet(planetDB)
 	if err != nil {
 		return nil, err
 	}
 
+	// sql version
+	idInt, _ := strconv.Atoi(*id)
+
 	responsePlanet := domain.Planet{
-		ID:       domain.IDType(*id),
+		// ID:       domain.IDType(*id), //mongo version
+		ID:       idInt, //sql version
 		Name:     planetDB.Name,
 		Climate:  planetDB.Climate,
 		Terrain:  planetDB.Terrain,
