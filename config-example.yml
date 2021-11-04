@@ -1,12 +1,27 @@
 dev:
   PORT: 80
-  MONGO_HOST:  "mongodb+srv://####:####@cluster0.ws7xq.gcp.mongodb.net/test?authSource=admin&replicaSet=Cluster0-shard-0&readPreference=primary&ssl=true"
+  MONGO_HOST:  "mongodb+srv://#####:######@cluster0.ws7xq.gcp.mongodb.net/test?authSource=admin&replicaSet=Cluster0-shard-0&readPreference=primary&ssl=true"
   MONGO_DB: "starwars_qa"
+  MYSQL_USER: "root"
+  MYSQL_PASSWD: "######"
+  MYSQL_ADDR: "localhost"
+  MYSQL_PORT: "3306"
+  MYSQL_NAME: "starwars"
 
 qa:
-  MONGO_HOST:  "mongodb+srv://####:####@cluster0.ws7xq.gcp.mongodb.net/test?authSource=admin&replicaSet=Cluster0-shard-0&readPreference=primary&ssl=true"
+  MONGO_HOST:  "mongodb+srv://#####:######@cluster0.ws7xq.gcp.mongodb.net/test?authSource=admin&replicaSet=Cluster0-shard-0&readPreference=primary&ssl=true"
   MONGO_DB: "starwars_qa"
+  MYSQL_USER: "root"
+  MYSQL_PASSWD: "######"
+  MYSQL_ADDR: "localhost"
+  MYSQL_PORT: "3306"
+  MYSQL_NAME: "starwars"
 
 prod:
-  MONGO_HOST: "mongodb+srv://####:####@cluster0.ws7xq.gcp.mongodb.net/test?authSource=admin&replicaSet=Cluster0-shard-0&readPreference=primary&ssl=true"
+  MONGO_HOST: "mongodb+srv://#####:######@cluster0.ws7xq.gcp.mongodb.net/test?authSource=admin&replicaSet=Cluster0-shard-0&readPreference=primary&ssl=true"
   MONGO_DB: "starwars_prod"
+  MYSQL_USER: "root"
+  MYSQL_PASSWD: "######"
+  MYSQL_ADDR: "localhost"
+  MYSQL_PORT: "3306"
+  MYSQL_NAME: "starwars"
